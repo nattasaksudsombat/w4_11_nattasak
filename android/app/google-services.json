@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "627649900294",
+    "project_id": "w4-nattasak",
+    "storage_bucket": "w4-nattasak.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627649900294:android:5d2a0081e854522ba6f887",
+        "android_client_info": {
+          "package_name": "com.example.w4_11_nattasak"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhLrxJ6J6_e7mMqdq6J03Ie9R8T8FI9FY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
