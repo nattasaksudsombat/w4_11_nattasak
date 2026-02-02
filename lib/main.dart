@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  // 🟢 เริ่มต้นระบบ Flutter และเชื่อมต่อ Firebase ก่อนรัน App
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -11,9 +12,9 @@ void main() async {
   runApp(const MyApp());
 }
 
-/// =======================
-/// 🔥 APP ROOT
-/// =======================
+/// ======================================================
+/// 🚀 CONFIGURATION: ปรับแต่งสีธีม (ม่วง-ดำ) ทั่วทั้งแอป
+/// ======================================================
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -23,26 +24,28 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Music Vault',
       theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0F0F14),
+        brightness: Brightness.dark, // ตัวนี้บอกว่าธีมหลักคือ Dark
+        scaffoldBackgroundColor: const Color(0xFF050507),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
+          seedColor: Colors.deepPurpleAccent,
+          brightness: Brightness.dark, // ✨ เพิ่มบรรทัดนี้เข้าไปเพื่อให้ ColorScheme เป็น Dark เหมือนกันครับ
+          primary: Colors.deepPurpleAccent,
+          surface: const Color(0xFF1A1A2E),
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          centerTitle: true,
+          titleTextStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
         ),
       ),
-      home: const MyHomePage(title: '🎧 Music Vault'),
+      home: const MyHomePage(title: '🔮 Music Vault'),
     );
   }
 }
 
-/// =======================
-/// 🎵 HOME PAGE
-/// =======================
+/// ======================================================
+/// 🎵 HOME PAGE: หน้าจัดการข้อมูลเพลง (เพิ่ม & แสดงรายการ)
+/// ======================================================
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
@@ -52,34 +55,42 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // 📝 ตัวควบคุมข้อความสำหรับรับค่าจาก TextField
   final _songNameCtrl = TextEditingController();
   final _artistCtrl = TextEditingController();
   final _songTypeCtrl = TextEditingController();
 
+  // 💾 ฟังก์ชันบันทึกข้อมูลลง Firebase Firestore
   void addSong() async {
-    if (_songNameCtrl.text.isEmpty) return;
+    if (_songNameCtrl.text.isEmpty) return; // ถ้าชื่อเพลงว่าง ไม่ต้องทำต่อ
 
     await FirebaseFirestore.instance.collection("songs").add({
       "songName": _songNameCtrl.text,
       "artist": _artistCtrl.text,
       "songType": _songTypeCtrl.text,
-      "createdAt": Timestamp.now(),
+      "createdAt": Timestamp.now(), // เก็บเวลาที่สร้างเพื่อใช้เรียงลำดับ
     });
 
+    // ล้างค่าในช่องกรอกหลังจากบันทึกเสร็จ
     _songNameCtrl.clear();
     _artistCtrl.clear();
     _songTypeCtrl.clear();
   }
 
-  InputDecoration _input(String label, IconData icon) {
+  // 🛠️ Widget ตัวช่วยสร้างดีไซน์ช่อง Input ให้เหมือนกันทุกช่อง
+  InputDecoration _inputStyle(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon),
+      prefixIcon: Icon(icon, color: Colors.deepPurpleAccent),
       filled: true,
-      fillColor: Colors.white10,
+      fillColor: const Color(0xFF161625),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(15),
         borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(color: Colors.deepPurpleAccent, width: 1),
       ),
     );
   }
@@ -92,41 +103,32 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// 🔤 INPUTS
-            TextField(
-              controller: _songNameCtrl,
-              decoration: _input("ชื่อเพลง", Icons.music_note),
-            ),
+            /// ⌨️ ส่วนกรอกข้อมูล (Text Fields)
+            TextField(controller: _songNameCtrl, decoration: _inputStyle("ชื่อเพลง", Icons.music_note)),
             const SizedBox(height: 10),
-            TextField(
-              controller: _artistCtrl,
-              decoration: _input("ศิลปิน", Icons.person),
-            ),
+            TextField(controller: _artistCtrl, decoration: _inputStyle("ศิลปิน", Icons.person_pin_rounded)),
             const SizedBox(height: 10),
-            TextField(
-              controller: _songTypeCtrl,
-              decoration: _input("แนวเพลง", Icons.category),
-            ),
-            const SizedBox(height: 14),
+            TextField(controller: _songTypeCtrl, decoration: _inputStyle("แนวเพลง", Icons.album_rounded)),
+            const SizedBox(height: 15),
 
-            /// ➕ ADD BUTTON
+            /// ➕ ปุ่มกดเพื่อบันทึก
             SizedBox(
               width: double.infinity,
+              height: 50,
               child: ElevatedButton.icon(
-                icon: const Icon(Icons.add),
-                label: const Text("เพิ่มเพลง"),
+                icon: const Icon(Icons.add_rounded),
+                label: const Text("บันทึกเข้า Vault", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
+                  backgroundColor: Colors.deepPurpleAccent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 ),
                 onPressed: addSong,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
-            /// 🎼 SONG LIST
+            /// 📡 ส่วนแสดงรายการเพลงแบบ Real-time (ใช้ StreamBuilder)
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -134,68 +136,54 @@ class _MyHomePageState extends State<MyHomePage> {
                     .orderBy("createdAt", descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
+                  // แสดงวงกลมหมุนถ้าข้อมูลยังโหลดไม่เสร็จ
+                  if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
                   final docs = snapshot.data!.docs;
 
+                  // สร้าง Grid แสดงผล 2 คอลัมน์
                   return GridView.builder(
                     itemCount: docs.length,
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      mainAxisSpacing: 14,
-                      crossAxisSpacing: 14,
-                      childAspectRatio: 0.85,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 1.1,
                     ),
                     itemBuilder: (context, index) {
-                      final song =
-                      docs[index].data() as Map<String, dynamic>;
+                      final song = docs[index].data() as Map<String, dynamic>;
 
                       return InkWell(
-                        borderRadius: BorderRadius.circular(22),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => SongDetail(song: song),
-                            ),
-                          );
+                          // ➡️ คลิกที่ Card เพื่อข้ามไปหน้าดูรายละเอียด
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => SongDetail(song: song)));
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(22),
+                            borderRadius: BorderRadius.circular(20),
                             gradient: LinearGradient(
-                              colors: [
-                                Colors.deepPurple.shade700,
-                                Colors.deepPurple.shade900,
-                              ],
+                              colors: [const Color(0xFF2E1A47), Colors.black],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.deepPurple.withOpacity(0.5),
-                                blurRadius: 12,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
+                            border: Border.all(color: Colors.white10),
                           ),
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(14),
-                              child: Text(
-                                song["songName"],
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.play_circle_fill, size: 40, color: Colors.deepPurpleAccent),
+                              const SizedBox(height: 8),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(
+                                  song["songName"],
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                            ),
+                              Text(song["artist"], style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                            ],
                           ),
                         ),
                       );
@@ -211,9 +199,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/// =======================
-/// 🎧 SONG DETAIL PAGE
-/// =======================
+/// ======================================================
+/// 🎧 SONG DETAIL: หน้าแสดงรายละเอียดเพลงแบบเน้นๆ
+/// ======================================================
 class SongDetail extends StatelessWidget {
   final Map<String, dynamic> song;
   const SongDetail({super.key, required this.song});
@@ -221,48 +209,38 @@ class SongDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(song["songName"])),
+      appBar: AppBar(title: const Text("Now Playing")),
       body: Center(
         child: Container(
-          margin: const EdgeInsets.all(24),
-          padding: const EdgeInsets.all(24),
+          width: 300,
+          padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
-            gradient: LinearGradient(
-              colors: [
-                Colors.deepPurple.shade800,
-                Colors.black,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black54,
-                blurRadius: 20,
-              )
+            color: const Color(0xFF121220),
+            borderRadius: BorderRadius.circular(40),
+            boxShadow: [
+              BoxShadow(color: Colors.deepPurpleAccent.withOpacity(0.2), blurRadius: 20, spreadRadius: 5)
             ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                song["songName"],
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+              // รูปจำลองแผ่นเสียง/หน้าปก
+              Container(
+                height: 150, width: 150,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const RadialGradient(colors: [Colors.deepPurpleAccent, Colors.black]),
+                  border: Border.all(color: Colors.white10, width: 4),
                 ),
+                child: const Icon(Icons.music_note, size: 80, color: Colors.white),
               ),
-              const SizedBox(height: 14),
-              Text(
-                "🎤 ${song["artist"]}",
-                style: const TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                "🎼 ${song["songType"]}",
-                style: const TextStyle(fontSize: 16),
-              ),
+              const SizedBox(height: 30),
+              // ข้อมูลเพลงที่ส่งมาจากหน้าแรก
+              Text(song["songName"], style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text("🎤 ${song["artist"]}", style: const TextStyle(fontSize: 18, color: Colors.deepPurpleAccent)),
+              const SizedBox(height: 4),
+              Text("Genre: ${song["songType"]}", style: const TextStyle(color: Colors.grey)),
             ],
           ),
         ),
