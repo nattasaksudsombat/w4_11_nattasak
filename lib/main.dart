@@ -61,9 +61,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final _songTypeCtrl = TextEditingController();
 
   // 💾 ฟังก์ชันบันทึกข้อมูลลง Firebase Firestore
-  void addSong() async {
+  void addSong() async {//async: บอกว่าฟังก์ชัน addSong จะมีการทำงานที่ต้องรอ (Asynchronous) ทำให้ App ไม่ค้างขณะบันทึกข้อมูล
     if (_songNameCtrl.text.isEmpty) return; // ถ้าชื่อเพลงว่าง ไม่ต้องทำต่อ
-
+    //await: โปรแกรมจะหยุดรอให้ FirebaseFirestore บันทึกข้อมูลลงฐานข้อมูลให้เสร็จก่อน ถึงจะขยับไปทำคำสั่งถัดไป (ถ้ามี)
     await FirebaseFirestore.instance.collection("songs").add({
       "songName": _songNameCtrl.text,
       "artist": _artistCtrl.text,
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 10),
             TextField(controller: _songTypeCtrl, decoration: _inputStyle("แนวเพลง", Icons.album_rounded)),
             const SizedBox(height: 15),
-
+              //ช่วยดัน Widget ตัวถัดไปลงไปข้างล่าง 10 หน่วย เพื่อไม่ให้หน้าจอฝืดหรือติดกันเกินไปจนดูยาก
             /// ➕ ปุ่มกดเพื่อบันทึก
             SizedBox(
               width: double.infinity,
@@ -156,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       return InkWell(
                         onTap: () {
                           // ➡️ คลิกที่ Card เพื่อข้ามไปหน้าดูรายละเอียด
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => SongDetail(song: song)));
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => SongDetail(song: song)));//ไปหน้าSongDetail
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -168,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             border: Border.all(color: Colors.white10),
                           ),
-                          child: Column(
+                          child: Column(//Column: จัดเรียงไอคอนและข้อความจากบนลงล่
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Icon(Icons.play_circle_fill, size: 40, color: Colors.deepPurpleAccent),
@@ -176,12 +176,12 @@ class _MyHomePageState extends State<MyHomePage> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8),
                                 child: Text(
-                                  song["songName"],
+                                  song["songName"],//ชื่อเพลง
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                   maxLines: 1, overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
+                              ),//แสดงชื่อศิลปินเป็นตัวอักษรสีเทาและขนาดเล็กกว่า เพื่อสร้างลำดับความสำคัญ (Visual Hierarchy)
                               Text(song["artist"], style: const TextStyle(color: Colors.grey, fontSize: 12)),
                             ],
                           ),
