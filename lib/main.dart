@@ -133,8 +133,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("songs")
-                    .orderBy("createdAt", descending: true)
-                    .snapshots(),
+                    .orderBy("createdAt", descending: true)// เรียงลำดับตามเวลาที่สร้าง (ใหม่ไปเก่า)
+                    .snapshots(),//ดึงข้อมูลแบบ Real-time
                 builder: (context, snapshot) {
                   // แสดงวงกลมหมุนถ้าข้อมูลยังโหลดไม่เสร็จ
                   if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
@@ -157,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         onTap: () {
                           // ➡️ คลิกที่ Card เพื่อข้ามไปหน้าดูรายละเอียด
                           Navigator.push(context, MaterialPageRoute(builder: (_) => SongDetail(song: song)));//ไปหน้าSongDetail
-                        },
+                        },// <--- ส่ง 'song' ไปให้หน้า SongDetail
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
@@ -204,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
 /// ======================================================
 class SongDetail extends StatelessWidget {
   final Map<String, dynamic> song;
-  const SongDetail({super.key, required this.song});
+  const SongDetail({super.key, required this.song});//บอกว่า "เอาข้อมูลที่ส่งมา ไปเก็บไว้ในตัวแปร song ของคลาสนี้เน้อ" เพื่อเอาไปใช้แสดงชื่อเพลงหรือศิลปินต่อไป
 
   @override
   Widget build(BuildContext context) {
